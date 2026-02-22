@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: The CUBE — Nikolai Borodin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-card: #16161f;
+  --text-primary: #e8e8ed;
+  --text-secondary: #9494a3;
+  --text-muted: #5e5e6e;
+  --accent: #4f8fff;
+  --accent-dim: #3a6fd4;
+  --accent-glow: rgba(79, 143, 255, 0.15);
+  --accent-warm: #ff6f4f;
+  --accent-green: #4fcc7a;
+  --accent-yellow: #f0c040;
+  --border: #22222e;
+  --border-light: #2a2a38;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --max-width: 860px;
+  --radius: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #7aadff; }
+img { max-width: 100%; display: block; border-radius: var(--radius); }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 18px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
+.nav-logo span { color: var(--accent); }
+.nav-back { font-family: var(--font-display); font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.nav-back:hover { color: var(--text-primary); }
+
+.case-hero { padding: 140px 40px 60px; max-width: var(--max-width); margin: 0 auto; }
+.case-hero-label {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+}
+.case-hero-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+.case-hero h1 {
+  font-family: var(--font-display); font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 20px;
+}
+.case-hero-desc { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; line-height: 1.75; margin-bottom: 32px; }
+.case-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+.meta-value { font-family: var(--font-display); font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+
+.case-content { max-width: var(--max-width); margin: 0 auto; padding: 0 40px 100px; }
+.case-section { margin-bottom: 64px; }
+.case-section-number { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; color: var(--accent-dim); margin-bottom: 8px; }
+.case-section h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.01em; }
+.case-section h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin-bottom: 14px; margin-top: 36px; color: var(--text-primary); }
+.case-section p { color: var(--text-secondary); margin-bottom: 16px; font-size: 1rem; line-height: 1.8; }
+.case-section p strong { color: var(--text-primary); }
+
+.callout {
+  background: var(--bg-card); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 24px 0;
+}
+.callout.challenge { border-left-color: var(--accent-warm); }
+.callout.solution { border-left-color: var(--accent-green); }
+.callout.insight { border-left-color: var(--accent-yellow); }
+.callout-title {
+  font-family: var(--font-display); font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.callout.challenge .callout-title { color: var(--accent-warm); }
+.callout.solution .callout-title { color: var(--accent-green); }
+.callout.insight .callout-title { color: var(--accent-yellow); }
+.callout p { color: var(--text-secondary); margin-bottom: 0; font-size: 0.95rem; line-height: 1.7; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0; }
+.stat-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; text-align: center;
+}
+.stat-box-number { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+.stat-box-number.blue { color: var(--accent); }
+.stat-box-number.green { color: var(--accent-green); }
+.stat-box-number.yellow { color: var(--accent-yellow); }
+.stat-box-number.red { color: var(--accent-warm); }
+.stat-box-label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.3; }
+
+.process-list { list-style: none; margin: 24px 0; display: flex; flex-direction: column; gap: 16px; }
+.process-item { display: flex; gap: 16px; align-items: flex-start; }
+.process-number {
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; color: var(--accent);
+  background: var(--accent-glow); width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.process-text { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+.process-text strong { color: var(--text-primary); }
+
+.case-image {
+  margin: 28px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-secondary);
+}
+.case-image-placeholder {
+  width: 100%; height: 220px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-secondary); color: var(--text-muted);
+  font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.05em;
+}
+.case-image-caption {
+  padding: 12px 16px; font-size: 0.82rem; color: var(--text-muted);
+  font-style: italic; border-top: 1px solid var(--border);
+}
+
+/* Module grid */
+.module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0; }
+.module-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px; text-align: center; transition: border-color 0.3s;
+}
+.module-card:hover { border-color: var(--border-light); }
+.module-icon { font-size: 1.6rem; margin-bottom: 8px; }
+.module-name { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.module-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+/* Steam link */
+.steam-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 0.88rem; font-weight: 600;
+  padding: 14px 24px; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-primary); transition: all 0.25s; margin-top: 16px;
+}
+.steam-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+.case-divider { border: none; height: 1px; background: var(--border); margin: 48px 0; }
+
+.case-footer-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 0; border-top: 1px solid var(--border); margin-top: 48px;
+}
+.case-nav-link {
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 500;
+  color: var(--text-secondary); display: flex; align-items: center; gap: 8px;
+}
+.case-nav-link:hover { color: var(--text-primary); }
+
+.fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 700px) {
+  .case-hero { padding: 120px 24px 40px; }
+  .case-content { padding: 0 24px 80px; }
+  nav { padding: 14px 20px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .module-grid { grid-template-columns: 1fr 1fr; }
+  .case-meta { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NB<span>.</span></a>
+  <a href="index.html#cases" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="case-hero">
+  <div class="case-hero-label fade-in">Pre-Production & Pipeline Case Study</div>
+  <h1 class="fade-in">The CUBE: Building the Level Design Pipeline from Scratch</h1>
+  <p class="case-hero-desc fade-in">
+    As Senior Level Designer at Mundfish during pre-production of The CUBE — a PvPvE extraction shooter set in the Atomic Heart universe — I established the level design pipeline, created a modular building kit, and mentored junior designers to scale the team's output across a massive play space.
+  </p>
+  <div class="case-meta fade-in">
+    <div class="meta-item">
+      <span class="meta-label">Project</span>
+      <span class="meta-value">The CUBE (Atomic Heart universe)</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Studio</span>
+      <span class="meta-value">Mundfish</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Role</span>
+      <span class="meta-value">Senior Level Designer</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Engine</span>
+      <span class="meta-value">Unreal Engine 5</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Phase</span>
+      <span class="meta-value">Pre-production</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="case-content">
+
+  <!-- 01 THE PROJECT -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">01</div>
+    <h2>The Project</h2>
+    <p>
+      The CUBE is a multiplayer PvPvE extraction shooter set in the Atomic Heart universe. The game world takes the form of a <strong>Rubik's Cube</strong> — each of its 6 faces is a distinct biome, and each biome is divided into a <strong>3×3 grid of levels</strong>, with each level measuring 400×400 meters. That's 54 individual levels across 6 biomes.
+    </p>
+    <p>
+      I joined during <strong>pre-production</strong> as the Senior Level Designer on a team of 6. My primary responsibility wasn't building individual levels — it was figuring out <strong>how we build levels at all</strong> at this scale, and making sure the team could execute efficiently once production began.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-number blue">54</div>
+        <div class="stat-box-label">Total levels<br>(6 biomes × 9)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number yellow">400m</div>
+        <div class="stat-box-label">Level size<br>(400×400m each)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number green">6</div>
+        <div class="stat-box-label">LD team size</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number red">3–4×</div>
+        <div class="stat-box-label">Prototyping<br>speed increase</div>
+      </div>
+    </div>
+
+    <a href="https://store.steampowered.com/app/3230430/The_CUBE/" target="_blank" class="steam-link">🎮 View on Steam</a>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 02 THE CHALLENGE -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">02</div>
+    <h2>The Challenge</h2>
+    <p>
+      Pre-production on a project of this scale posed a fundamental question: <strong>how do you prototype 54 large-scale levels fast enough to validate gameplay before committing to full art production?</strong>
+    </p>
+
+    <div class="callout challenge">
+      <div class="callout-title">Core Challenges</div>
+      <p>
+        The Rubik's Cube structure meant each level needed to work both <strong>standalone</strong> (as an extraction zone) and as part of a <strong>larger biome grid</strong> (connected to adjacent levels). The Atomic Heart universe demanded a specific visual identity per biome. The team included junior designers who needed to be productive quickly. And the sheer square footage — over 8 km² total — meant traditional hand-crafting of every space would take years.
+      </p>
+    </div>
+
+    <p>
+      My job was to solve these problems at the <strong>systems level</strong> — not by designing faster, but by building tools and processes that let the whole team design faster.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 03 MODULAR KIT -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">03</div>
+    <h2>The Modular Building Kit</h2>
+    <p>
+      Together with the art team, I designed and built a <strong>modular construction system</strong> for rapid level assembly. The kit consisted of ~25–30 snap-together modules based on a <strong>4×4 meter grid</strong> — walls, corners, doorways, windows, floor sections — that could be combined to create buildings of any size and layout in minutes instead of days.
+    </p>
+
+    <div class="module-grid">
+      <div class="module-card">
+        <div class="module-icon">🧱</div>
+        <div class="module-name">Walls</div>
+        <div class="module-desc">Solid, windowed, and damaged variants. 4m segments.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-icon">🚪</div>
+        <div class="module-name">Doorways</div>
+        <div class="module-desc">Single, double, and destroyed. Snap to wall grid.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-icon">📐</div>
+        <div class="module-name">Corners</div>
+        <div class="module-desc">Interior and exterior corners. 90° snap alignment.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-icon">🪟</div>
+        <div class="module-name">Windows</div>
+        <div class="module-desc">Various sizes. Defines sight lines and cover opportunities.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-icon">▫️</div>
+        <div class="module-name">Floor Sections</div>
+        <div class="module-desc">4×4m tiles. Ground, elevated, and multi-story variants.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-icon">🏗️</div>
+        <div class="module-name">Structures</div>
+        <div class="module-desc">Pre-assembled rooms and facades for fast composition.</div>
+      </div>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">Design Decision: 4m Grid</div>
+      <p>
+        We chose a <strong>4×4 meter module size</strong> optimized for gameplay rather than architectural realism. The grid needed to accommodate player movement, combat ranges, and cover placement. Realistic room proportions would have created spaces that felt wrong to play in — so we prioritized <strong>how spaces feel in gameplay</strong> over how they'd look in real life.
+      </p>
+    </div>
+
+    <div class="callout solution">
+      <div class="callout-title">Impact</div>
+      <p>
+        A building that previously took <strong>3–4 days</strong> to greybox could now be assembled in <strong>under a day</strong>. Junior designers could pick up the kit and start building immediately — the snap system and standardized metrics eliminated guesswork and enforced consistent quality across the team.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 04 CROSS-DEPARTMENT -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">04</div>
+    <h2>Cross-Department Collaboration</h2>
+    <p>
+      The Rubik's Cube world structure required constant alignment between <strong>level design, engineering, and art</strong>. Each department had constraints that affected the others, and pre-production was where these constraints needed to be discovered and resolved.
+    </p>
+
+    <h3>With Engineering</h3>
+    <p>
+      The cube's face-and-grid structure had deep technical implications — level streaming, seamless transitions between 400m zones, and how biome boundaries are handled. I worked closely with engineers to define <strong>level boundaries, connection points, and streaming budgets</strong> that were technically feasible while preserving gameplay flow across zone edges. This was heavily R&D-driven — many approaches were prototyped and discarded before we found solutions that worked.
+    </p>
+
+    <h3>With Art</h3>
+    <p>
+      The modular kit was a <strong>joint effort with the art team</strong>. I defined the gameplay requirements — module sizes, snap grid, sight line needs, cover dimensions — while artists ensured the modules could receive art passes that matched the Atomic Heart visual identity. Each biome needed distinct visual language while sharing the same modular grammar underneath.
+    </p>
+
+    <h3>Establishing Shared Metrics</h3>
+    <p>
+      One of the first things I produced was a <strong>level design metrics document</strong> — covering corridor widths, room sizes, sight line distances, cover spacing, and engagement ranges. This became the shared language between all three departments: engineers built streaming around these distances, artists sized props to these dimensions, and designers built levels to these rules.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 05 MENTORING -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">05</div>
+    <h2>Mentoring Junior Designers</h2>
+    <p>
+      Two of the six-person LD team were juniors. In pre-production, when processes are still being invented, juniors can easily get stuck or produce work that doesn't align with the evolving vision. I invested time in <strong>structured onboarding and ongoing mentorship</strong> to make them productive fast.
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Modular kit as training tool</strong> — The kit wasn't just a production accelerator; it was a teaching device. Juniors learned level design principles (flow, cover, sight lines) by assembling modules rather than modeling from scratch. The constraints of the kit guided them toward good design decisions.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Metrics document as reference</strong> — Instead of relying on verbal feedback, juniors had a written spec to check their work against. Corridor too narrow? Check the doc. Engagement range too short? The metrics say why.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Review cadence</strong> — Regular blockout reviews where I walked through their work, explaining not just what to fix but <strong>why</strong> — connecting spatial decisions to gameplay outcomes.</span>
+      </li>
+    </ol>
+
+    <div class="callout solution">
+      <div class="callout-title">Result</div>
+      <p>
+        Both juniors were independently building levels within the first few weeks — producing work that met the project's quality bar without constant oversight. The combination of modular kit + metrics doc + regular reviews created a <strong>self-reinforcing system</strong> that scaled mentoring beyond one-on-one time.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 06 TAKEAWAYS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">06</div>
+    <h2>Key Takeaways</h2>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Pre-production is about building systems, not content.</strong> My biggest contribution wasn't any single level — it was the modular kit, the metrics framework, and the pipeline that let a 6-person team tackle 54 levels with confidence.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Gameplay trumps realism in metrics.</strong> The 4m grid was "wrong" architecturally but right for the game. Prioritizing how spaces play over how they look on a blueprint produced better combat encounters.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Tools are mentorship at scale.</strong> A well-designed modular kit teaches level design principles through its constraints. Juniors learn by doing — and the kit makes "doing" produce good results from day one.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Cross-department alignment starts in pre-production.</strong> The metrics document wasn't just for LD — it became the shared vocabulary between engineering, art, and design. Investing in that shared language early prevented months of misalignment later.</span>
+      </li>
+    </ol>
+  </div>
+
+  <!-- FOOTER NAV -->
+  <div class="case-footer-nav">
+    <a href="case-openworld.html" class="case-nav-link">← Open-World Extraction</a>
+    <a href="index.html#cases" class="case-nav-link">All Case Studies →</a>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+});
+</script>
+
+</body>
+</html>

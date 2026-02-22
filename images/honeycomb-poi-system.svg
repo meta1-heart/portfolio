@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 680" font-family="'Sora', 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Hex clip for reuse -->
+    <clipPath id="hexClip">
+      <polygon points="50,0 100,25 100,75 50,100 0,75 0,25"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="680" rx="12" fill="#111118"/>
+  <rect width="900" height="680" rx="12" fill="none" stroke="#22222e"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" fill="#e8e8ed" font-size="15" font-weight="700" letter-spacing="0.05em">POI DISTRIBUTION — HONEYCOMB SYSTEM</text>
+  <text x="450" y="56" text-anchor="middle" fill="#5e5e6e" font-size="11">300–400m spacing · Danger gradient from edge to center · 2×2 km map</text>
+
+  <!-- ===== DANGER GRADIENT BACKGROUND RINGS ===== -->
+  <!-- Center (high danger) -->
+  <circle cx="450" cy="350" r="120" fill="rgba(255,111,79,0.06)" stroke="none"/>
+  <!-- Mid ring -->
+  <circle cx="450" cy="350" r="210" fill="rgba(240,192,64,0.04)" stroke="none"/>
+  <!-- Outer ring -->
+  <circle cx="450" cy="350" r="290" fill="rgba(79,204,122,0.03)" stroke="none"/>
+
+  <!-- Gradient ring labels -->
+  <text x="450" y="138" text-anchor="middle" fill="#4fcc7a" font-size="9" font-weight="500" opacity="0.7">LOW RISK · LOW LOOT</text>
+  <text x="450" y="198" text-anchor="middle" fill="#f0c040" font-size="9" font-weight="500" opacity="0.7">MODERATE RISK</text>
+  <text x="450" y="268" text-anchor="middle" fill="#ff6f4f" font-size="9" font-weight="500" opacity="0.7">HIGH RISK · HIGH LOOT</text>
+
+  <!-- ===== HEXAGONAL POI GRID ===== -->
+  <!-- Helper: each hex is ~70px wide, rows offset by 35px -->
+  <!-- Row 0 (top edge) — safe zone -->
+  <g opacity="0.5">
+    <polygon points="310,100 340,83 370,100 370,133 340,150 310,133" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="340" cy="116" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="380,100 410,83 440,100 440,133 410,150 380,133" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="410" cy="116" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="450,100 480,83 510,100 510,133 480,150 450,133" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="480" cy="116" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="520,100 550,83 580,100 580,133 550,150 520,133" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="550" cy="116" r="4" fill="#4fcc7a" opacity="0.5"/>
+  </g>
+
+  <!-- Row 1 (offset) — safe/mid transition -->
+  <g opacity="0.6">
+    <polygon points="275,150 305,133 335,150 335,183 305,200 275,183" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="305" cy="166" r="4" fill="#4fcc7a" opacity="0.6"/>
+    <polygon points="345,150 375,133 405,150 405,183 375,200 345,183" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="375" cy="166" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="415,150 445,133 475,150 475,183 445,200 415,183" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="445" cy="166" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="485,150 515,133 545,150 545,183 515,200 485,183" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="515" cy="166" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="555,150 585,133 615,150 615,183 585,200 555,183" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="585" cy="166" r="4" fill="#4fcc7a" opacity="0.6"/>
+  </g>
+
+  <!-- Row 2 — mid zone -->
+  <g opacity="0.7">
+    <polygon points="240,200 270,183 300,200 300,233 270,250 240,233" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="270" cy="216" r="4" fill="#4fcc7a" opacity="0.6"/>
+    <polygon points="310,200 340,183 370,200 370,233 340,250 310,233" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="340" cy="216" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="380,200 410,183 440,200 440,233 410,250 380,233" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="410" cy="216" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="450,200 480,183 510,200 510,233 480,250 450,233" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="480" cy="216" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="520,200 550,183 580,200 580,233 550,250 520,233" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="550" cy="216" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="590,200 620,183 650,200 650,233 620,250 590,233" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="620" cy="216" r="4" fill="#4fcc7a" opacity="0.6"/>
+  </g>
+
+  <!-- Row 3 (offset) — approaching center -->
+  <g opacity="0.8">
+    <polygon points="205,250 235,233 265,250 265,283 235,300 205,283" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="235" cy="266" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="275,250 305,233 335,250 335,283 305,300 275,283" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="305" cy="266" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="345,250 375,233 405,250 405,283 375,300 345,283" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="375" cy="266" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="415,250 445,233 475,250 475,283 445,300 415,283" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="445" cy="266" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="485,250 515,233 545,250 545,283 515,300 485,283" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="515" cy="266" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="555,250 585,233 615,250 615,283 585,300 555,283" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="585" cy="266" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="625,250 655,233 685,250 685,283 655,300 625,283" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="655" cy="266" r="4" fill="#4fcc7a" opacity="0.5"/>
+  </g>
+
+  <!-- Row 4 — CENTER ROW (max danger) -->
+  <g opacity="0.9">
+    <polygon points="240,300 270,283 300,300 300,333 270,350 240,333" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="270" cy="316" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="310,300 340,283 370,300 370,333 340,350 310,333" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="340" cy="316" r="6" fill="#ff6f4f" opacity="0.8"/>
+    <polygon points="380,300 410,283 440,300 440,333 410,350 380,333" fill="none" stroke="#ff6f4f" stroke-width="2"/>
+    <circle cx="410" cy="316" r="7" fill="#ff6f4f" opacity="0.9"/>
+    <!-- CENTER HEX -->
+    <polygon points="450,300 480,283 510,300 510,333 480,350 450,333" fill="rgba(255,111,79,0.12)" stroke="#ff6f4f" stroke-width="2.5"/>
+    <circle cx="480" cy="316" r="8" fill="#ff6f4f"/>
+    <polygon points="520,300 550,283 580,300 580,333 550,350 520,333" fill="none" stroke="#ff6f4f" stroke-width="2"/>
+    <circle cx="550" cy="316" r="7" fill="#ff6f4f" opacity="0.9"/>
+    <polygon points="590,300 620,283 650,300 650,333 620,350 590,333" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="620" cy="316" r="6" fill="#ff6f4f" opacity="0.8"/>
+  </g>
+
+  <!-- Row 5 (offset, mirror of row 3) -->
+  <g opacity="0.8">
+    <polygon points="205,350 235,333 265,350 265,383 235,400 205,383" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="235" cy="366" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="275,350 305,333 335,350 335,383 305,400 275,383" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="305" cy="366" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="345,350 375,333 405,350 405,383 375,400 345,383" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="375" cy="366" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="415,350 445,333 475,350 475,383 445,400 415,383" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="445" cy="366" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="485,350 515,333 545,350 545,383 515,400 485,383" fill="none" stroke="#ff6f4f" stroke-width="1.5"/>
+    <circle cx="515" cy="366" r="5" fill="#ff6f4f" opacity="0.7"/>
+    <polygon points="555,350 585,333 615,350 615,383 585,400 555,383" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="585" cy="366" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="625,350 655,333 685,350 685,383 655,400 625,383" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="655" cy="366" r="4" fill="#4fcc7a" opacity="0.5"/>
+  </g>
+
+  <!-- Row 6 (mirror of row 2) -->
+  <g opacity="0.7">
+    <polygon points="240,400 270,383 300,400 300,433 270,450 240,433" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="270" cy="416" r="4" fill="#4fcc7a" opacity="0.6"/>
+    <polygon points="310,400 340,383 370,400 370,433 340,450 310,433" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="340" cy="416" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="380,400 410,383 440,400 440,433 410,450 380,433" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="410" cy="416" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="450,400 480,383 510,400 510,433 480,450 450,433" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="480" cy="416" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="520,400 550,383 580,400 580,433 550,450 520,433" fill="none" stroke="#f0c040" stroke-width="1.2"/>
+    <circle cx="550" cy="416" r="5" fill="#f0c040" opacity="0.7"/>
+    <polygon points="590,400 620,383 650,400 650,433 620,450 590,433" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="620" cy="416" r="4" fill="#4fcc7a" opacity="0.6"/>
+  </g>
+
+  <!-- Row 7 (mirror of row 1) -->
+  <g opacity="0.6">
+    <polygon points="275,450 305,433 335,450 335,483 305,500 275,483" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="305" cy="466" r="4" fill="#4fcc7a" opacity="0.6"/>
+    <polygon points="345,450 375,433 405,450 405,483 375,500 345,483" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="375" cy="466" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="415,450 445,433 475,450 475,483 445,500 415,483" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="445" cy="466" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="485,450 515,433 545,450 545,483 515,500 485,483" fill="none" stroke="#f0c040" stroke-width="1"/>
+    <circle cx="515" cy="466" r="4" fill="#f0c040" opacity="0.6"/>
+    <polygon points="555,450 585,433 615,450 615,483 585,500 555,483" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="585" cy="466" r="4" fill="#4fcc7a" opacity="0.6"/>
+  </g>
+
+  <!-- Row 8 (bottom edge, mirror of row 0) -->
+  <g opacity="0.5">
+    <polygon points="310,500 340,483 370,500 370,533 340,550 310,533" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="340" cy="516" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="380,500 410,483 440,500 440,533 410,550 380,533" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="410" cy="516" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="450,500 480,483 510,500 510,533 480,550 450,533" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="480" cy="516" r="4" fill="#4fcc7a" opacity="0.5"/>
+    <polygon points="520,500 550,483 580,500 580,533 550,550 520,533" fill="none" stroke="#4fcc7a" stroke-width="1"/>
+    <circle cx="550" cy="516" r="4" fill="#4fcc7a" opacity="0.5"/>
+  </g>
+
+  <!-- ===== SPACING ANNOTATION ===== -->
+  <line x1="340" y1="116" x2="410" y2="116" stroke="#5e5e6e" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <line x1="340" y1="112" x2="340" y2="120" stroke="#5e5e6e" stroke-width="0.8"/>
+  <line x1="410" y1="112" x2="410" y2="120" stroke="#5e5e6e" stroke-width="0.8"/>
+  <text x="375" y="108" text-anchor="middle" fill="#5e5e6e" font-size="9">300–400m</text>
+
+  <!-- ===== POI DETAIL CALLOUT (bottom right) ===== -->
+  <rect x="680" y="440" width="200" height="120" rx="8" fill="#16161f" stroke="#22222e"/>
+  <text x="700" y="462" fill="#e8e8ed" font-size="11" font-weight="600">Single POI Structure</text>
+
+  <!-- Mini hex showing structure -->
+  <polygon points="740,490 770,475 800,490 800,520 770,535 740,520" fill="none" stroke="#5e5e6e" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="770" cy="505" r="8" fill="rgba(255,111,79,0.15)" stroke="#ff6f4f" stroke-width="1"/>
+  <circle cx="770" cy="505" r="3" fill="#ff6f4f"/>
+  <text x="770" y="550" text-anchor="middle" fill="#5e5e6e" font-size="8">core</text>
+  <text x="810" y="508" fill="#5e5e6e" font-size="8">← loot</text>
+  <text x="810" y="490" fill="#5e5e6e" font-size="8">perimeter</text>
+  <text x="810" y="478" fill="#5e5e6e" font-size="8">↙ visual cues</text>
+
+  <!-- ===== SPAWN / EXTRACTION MARKERS ===== -->
+  <!-- Top spawn -->
+  <rect x="415" y="72" width="130" height="20" rx="4" fill="rgba(79,143,255,0.1)" stroke="#4f8fff" stroke-width="1"/>
+  <text x="480" y="86" text-anchor="middle" fill="#4f8fff" font-size="9" font-weight="500">SPAWN / EXTRACT</text>
+
+  <!-- Bottom spawn -->
+  <rect x="415" y="556" width="130" height="20" rx="4" fill="rgba(79,143,255,0.1)" stroke="#4f8fff" stroke-width="1"/>
+  <text x="480" y="570" text-anchor="middle" fill="#4f8fff" font-size="9" font-weight="500">SPAWN / EXTRACT</text>
+
+  <!-- Left spawn -->
+  <rect x="130" y="306" width="55" height="20" rx="4" fill="rgba(79,143,255,0.1)" stroke="#4f8fff" stroke-width="1" transform="rotate(-90, 157, 316)"/>
+  <text x="157" y="320" text-anchor="middle" fill="#4f8fff" font-size="8" font-weight="500" transform="rotate(-90, 157, 320)">SPAWN</text>
+
+  <!-- Right spawn -->
+  <rect x="715" y="306" width="55" height="20" rx="4" fill="rgba(79,143,255,0.1)" stroke="#4f8fff" stroke-width="1" transform="rotate(90, 742, 316)"/>
+  <text x="742" y="320" text-anchor="middle" fill="#4f8fff" font-size="8" font-weight="500" transform="rotate(90, 742, 320)">SPAWN</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="130" y="610" width="640" height="50" rx="8" fill="#16161f" stroke="#22222e"/>
+
+  <circle cx="160" cy="630" r="5" fill="#4fcc7a" opacity="0.6"/>
+  <text x="172" y="634" fill="#9494a3" font-size="10">Low risk / Low loot</text>
+
+  <circle cx="320" cy="630" r="5" fill="#f0c040" opacity="0.7"/>
+  <text x="332" y="634" fill="#9494a3" font-size="10">Moderate risk</text>
+
+  <circle cx="460" cy="630" r="6" fill="#ff6f4f" opacity="0.9"/>
+  <text x="474" y="634" fill="#9494a3" font-size="10">High risk / High loot</text>
+
+  <polygon points="620,622 635,614 650,622 650,638 635,646 620,638" fill="none" stroke="#5e5e6e" stroke-width="0.8"/>
+  <text x="660" y="634" fill="#9494a3" font-size="10">POI cell (honeycomb)</text>
+
+</svg>

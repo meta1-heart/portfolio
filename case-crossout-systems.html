@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: Systems Design — Nikolai Borodin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-card: #16161f;
+  --bg-card-hover: #1c1c28;
+  --text-primary: #e8e8ed;
+  --text-secondary: #9494a3;
+  --text-muted: #5e5e6e;
+  --accent: #4f8fff;
+  --accent-dim: #3a6fd4;
+  --accent-glow: rgba(79, 143, 255, 0.15);
+  --accent-warm: #ff6f4f;
+  --accent-green: #4fcc7a;
+  --accent-yellow: #f0c040;
+  --border: #22222e;
+  --border-light: #2a2a38;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --max-width: 860px;
+  --radius: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #7aadff; }
+img { max-width: 100%; display: block; border-radius: var(--radius); }
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+/* === NAV === */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.nav-logo span { color: var(--accent); }
+.nav-back {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--text-primary); }
+
+/* === HERO === */
+.case-hero {
+  padding: 140px 40px 60px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+.case-hero-label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.case-hero-label::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--accent);
+}
+.case-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.case-hero-desc {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 640px;
+  line-height: 1.75;
+  margin-bottom: 32px;
+}
+.case-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.meta-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+.meta-value {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* === CONTENT === */
+.case-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+
+.case-section {
+  margin-bottom: 64px;
+}
+.case-section-number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-dim);
+  margin-bottom: 8px;
+}
+.case-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.case-section p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.case-section p strong {
+  color: var(--text-primary);
+}
+
+/* === CALLOUT BOXES === */
+.callout {
+  background: var(--bg-card);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+.callout.problem {
+  border-left-color: var(--accent-warm);
+}
+.callout.solution {
+  border-left-color: var(--accent-green);
+}
+.callout.insight {
+  border-left-color: var(--accent-yellow);
+}
+.callout-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.callout.problem .callout-title { color: var(--accent-warm); }
+.callout.solution .callout-title { color: var(--accent-green); }
+.callout.insight .callout-title { color: var(--accent-yellow); }
+.callout p {
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* === STATS ROW === */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+.stat-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+}
+.stat-box-number {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-box-number.red { color: var(--accent-warm); }
+.stat-box-number.blue { color: var(--accent); }
+.stat-box-number.green { color: var(--accent-green); }
+.stat-box-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* === IMAGE === */
+.case-image {
+  margin: 32px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+.case-image img {
+  width: 100%;
+  border-radius: 0;
+}
+.case-image-caption {
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+}
+
+/* === PROCESS LIST === */
+.process-list {
+  list-style: none;
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.process-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.process-number {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-glow);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.process-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.process-text strong { color: var(--text-primary); }
+
+/* === RESOURCE MODEL === */
+.resource-model {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin: 28px 0;
+}
+.resource-model h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+.resource-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.resource-item {
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+.resource-item-name {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.resource-item-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.resource-item.cabin .resource-item-name { color: var(--accent-yellow); }
+.resource-item.mover .resource-item-name { color: var(--accent-green); }
+.resource-item.bonus .resource-item-name { color: var(--accent); }
+
+/* === TABLE === */
+.case-table-wrap {
+  overflow-x: auto;
+  margin: 28px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.case-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+}
+.case-table th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.case-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.case-table tr:last-child td { border-bottom: none; }
+.case-table tr:hover td { background: rgba(79, 143, 255, 0.03); }
+.case-table .highlight-cell { color: var(--accent); font-weight: 600; }
+.case-table .warn-cell { color: var(--accent-warm); font-weight: 600; }
+.case-table .good-cell { color: var(--accent-green); font-weight: 600; }
+
+/* === DIVIDER === */
+.case-divider {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 48px 0;
+}
+
+/* === FOOTER NAV === */
+.case-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+.case-nav-link {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.case-nav-link:hover { color: var(--text-primary); }
+
+/* === ANIMATIONS === */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 700px) {
+  .case-hero { padding: 120px 24px 40px; }
+  .case-content { padding: 0 24px 80px; }
+  nav { padding: 14px 20px; }
+  .stats-row { grid-template-columns: 1fr; }
+  .resource-grid { grid-template-columns: 1fr; }
+  .case-meta { gap: 20px; }
+}
+/* === WEAPON ARCHETYPE CARDS === */
+.case-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: sticky;
+  top: 62px;
+  z-index: 100;
+}
+.case-tab {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 12px 16px;
+  border-radius: 7px;
+  transition: all 0.25s;
+}
+.case-tab:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+.case-tab.active {
+  color: var(--text-primary);
+  background: rgba(79, 143, 255, 0.1);
+  border: 1px solid rgba(79, 143, 255, 0.2);
+}
+@media (max-width: 700px) {
+  .case-tabs { flex-direction: column; top: 56px; }
+  .case-tab { font-size: 0.78rem; padding: 10px 12px; }
+}
+.archetype-section {
+  margin: 28px 0;
+}
+.archetype-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+.archetype-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.archetype-grid.three-col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.archetype-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.3s;
+}
+.archetype-card:hover { border-color: var(--border-light); }
+.archetype-card-icon { font-size: 1.3rem; margin-bottom: 8px; }
+.archetype-card-name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.archetype-card-role {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.archetype-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+.archetype-card-perk {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--accent-yellow);
+  font-style: italic;
+}
+
+@media (max-width: 700px) {
+  .archetype-grid, .archetype-grid.three-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">NB<span>.</span></a>
+  <a href="index.html#cases" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="case-hero">
+  <div class="case-hero-label fade-in">Systems Design Case Study</div>
+  <h1 class="fade-in">Crossout Mobile: Systems Design</h1>
+  <p class="case-hero-desc fade-in">
+    Two systems design projects that reshaped the game's meta: reworking the vehicle carrying capacity system to fix a dominant movement type, and redesigning weapon archetypes to create distinct combat identities — both validated with live production data.
+  </p>
+  <div class="case-meta fade-in">
+    <div class="meta-item">
+      <span class="meta-label">Project</span>
+      <span class="meta-value">Crossout Mobile</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Role</span>
+      <span class="meta-value">Lead Level Designer / Systems Designer</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Engine</span>
+      <span class="meta-value">Unity</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Year</span>
+      <span class="meta-value">2021–2022</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="case-content">
+
+  <!-- Case navigation tabs -->
+  <div class="case-tabs fade-in" id="case-tabs">
+    <a href="#part1" class="case-tab active">Part 1: Carrying Capacity Rework</a>
+    <a href="#part2" class="case-tab">Part 2: Weapon Archetype Rework</a>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- PART 1: CARRYING CAPACITY REWORK -->
+  <!-- ============================================== -->
+
+  <div id="part1" class="case-section fade-in" style="text-align: center; padding: 20px 0 0;">
+    <div style="font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 8px;">Part 1</div>
+    <h2 style="font-size: 1.8rem; margin-bottom: 0;">Carrying Capacity Rework</h2>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 01 PROBLEM -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">01</div>
+    <h2>The Problem</h2>
+    <p>
+      Crossout Mobile is a vehicular combat game where players build custom vehicles from parts — cabins, weapons, armor, and <strong>movement parts</strong> (wheels, hovers, tank tracks). The movement system had a fundamental balance issue that was warping the entire competitive meta.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-number red">55%</div>
+        <div class="stat-box-label">Hover win rate<br>(target: ~50%)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number red">457k</div>
+        <div class="stat-box-label">Monthly hover battles<br>(dominant pick)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number red">43–47%</div>
+        <div class="stat-box-label">Tank track win rate<br>(underperforming)</div>
+      </div>
+    </div>
+
+    <div class="callout problem">
+      <div class="callout-title">Core Issue</div>
+      <p>
+        Movement parts (wheels, hovers, tracks) <strong>generated</strong> carrying capacity instead of just consuming it. This meant players could stack hovers endlessly — each one adding more capacity, allowing heavier weapons and more armor. The system rewarded excess with no diminishing returns. The project manager described it as <strong>"Baron Munchausen pulling himself up by his own hair."</strong>
+      </p>
+    </div>
+
+    <p>
+      This created a cascade of problems: hovers were the clear "best" movement type due to their FPS-like strafing controls combined with unlimited stacking potential. Tank tracks, despite their high individual capacity, were slow and inefficient by comparison. Wheels had no meaningful differentiation between variants. Players had figured out the optimal formula and the build meta had stagnated.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 02 ANALYSIS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">02</div>
+    <h2>Analysis & Root Cause</h2>
+    <p>
+      The project manager initially documented 5 interconnected problems with the movement system. After reviewing the analysis, I identified that they all shared a single root cause: <strong>the absence of an upper bound on movement part stacking.</strong>
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Key Insight</div>
+      <p>
+        The constructor (vehicle builder) was the core of the game — players loved the freedom to build anything. Any solution had to <strong>preserve</strong> the feeling of freedom while introducing healthy constraints. Removing carrying capacity from movement parts entirely would break the constructor's foundation.
+      </p>
+    </div>
+
+    <p>
+      Instead of removing what worked, I needed to add what was missing: <strong>a resource limiter that creates meaningful decisions</strong> about how many and which movement parts to use, while still allowing movement parts to contribute carrying capacity.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 03 SOLUTION -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">03</div>
+    <h2>The Solution: Wheel Points & Cabin Limits</h2>
+    <p>
+      I designed a new resource model that introduced constraints at the cabin level without dismantling the existing system. Movement parts still provide carrying capacity — but now within clearly defined boundaries.
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Wheel Points (new resource)</strong> — Each cabin provides a fixed number of Wheel Points. Every movement part consumes Wheel Points when installed. This directly limits how many wheels/hovers/tracks a vehicle can carry.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Carrying Capacity Cap</strong> — A maximum carrying capacity is now defined on each cabin. Movement parts still add capacity, but it cannot exceed the cabin's limit. No more infinite stacking.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Critical Mass Cap</strong> — Similarly capped at the cabin level, preventing unlimited armor stacking through movement part abuse.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">4</span>
+        <span class="process-text"><strong>Power Bonus for unused Wheel Points</strong> — If a player uses fewer movement parts than their cabin allows, the unused Wheel Points convert into a power (acceleration) bonus. This creates a genuine trade-off: more wheels = more capacity but slower acceleration; fewer wheels = less capacity but snappier handling.</span>
+      </li>
+    </ol>
+
+    <div class="callout solution">
+      <div class="callout-title">Design Philosophy</div>
+      <p>
+        The solution doesn't punish players — it creates <strong>meaningful choices</strong>. Every slot matters. Do you stack hovers for maximum carry weight, or leave some slots empty for a power bonus? Heavy cabin with tracks for armor, or light cabin with wheels for speed? The "right" answer now depends on your build strategy, not a single dominant formula.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 04 RESOURCE MODEL -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">04</div>
+    <h2>Resource Model</h2>
+    <p>
+      I created a system diagram to communicate the new resource flow to the team — showing how each component interacts, what provides resources, and what consumes them.
+    </p>
+
+    <div class="case-image">
+      <img src="images/carrying-capacity-diagram.png" alt="Resource model diagram showing the relationship between cabin, movement parts, weapons, and resource flows">
+      <div class="case-image-caption">
+        System diagram: resource flow between cabin, engines, movement parts, weapons, and structural parts. Yellow = cabin-defined parameters, Green = adds resource, Red = consumes resource, Dashed blue = new mechanics introduced in the rework.
+      </div>
+    </div>
+
+    <div class="resource-model">
+      <h3>New Resource Structure</h3>
+      <div class="resource-grid">
+        <div class="resource-item cabin">
+          <div class="resource-item-name">Cabin Provides</div>
+          <div class="resource-item-desc">Max Carrying Capacity, Critical Mass limit, Wheel Points budget, Max Speed, base Power</div>
+        </div>
+        <div class="resource-item mover">
+          <div class="resource-item-name">Movement Parts</div>
+          <div class="resource-item-desc">Add carrying capacity (up to cabin limit), consume Wheel Points and Power</div>
+        </div>
+        <div class="resource-item cabin">
+          <div class="resource-item-name">Engines (Modules)</div>
+          <div class="resource-item-desc">Extend cabin limits: +carrying capacity cap, +critical mass cap, +Wheel Points, +speed/power buff</div>
+        </div>
+        <div class="resource-item bonus">
+          <div class="resource-item-name">Power Bonus</div>
+          <div class="resource-item-desc">Unused Wheel Points → acceleration bonus. Fewer movement parts = snappier vehicle dynamics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 05 BALANCE -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">05</div>
+    <h2>Balance Spreadsheet & Theoretical Validation</h2>
+    <p>
+      Before any implementation, I built a comprehensive balance calculator in a spreadsheet to model every combination of cabin type × movement type and predict how the changes would affect existing builds.
+    </p>
+
+    <p>
+      <strong>Sheet 1: Interactive Calculator</strong> — Select any cabin and any combination of movement parts to see resulting stats (mass, carrying capacity, power consumption, speed, power bonus). Used by the team to quickly test "what if" scenarios.
+    </p>
+
+    <p>
+      <strong>Sheet 2: Reference Build Comparison</strong> — 9 archetype builds (Light/Medium/Heavy cabin × Hovers/Wheels/Tracks) compared side-by-side across all key parameters. This revealed the balance landscape at a glance.
+    </p>
+
+    <div class="case-table-wrap">
+      <table class="case-table">
+        <thead>
+          <tr>
+            <th>Build</th>
+            <th>Cabin</th>
+            <th>Movers</th>
+            <th>Carry Cap.</th>
+            <th>Armor Budget</th>
+            <th>Power Bonus</th>
+            <th>Max Speed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Light + Hovers</td>
+            <td>Light</td>
+            <td>6 Hovers</td>
+            <td>4,200</td>
+            <td>3,100</td>
+            <td class="good-cell">14.3%</td>
+            <td>100</td>
+          </tr>
+          <tr>
+            <td>Light + Wheels</td>
+            <td>Light</td>
+            <td>8 Wheels</td>
+            <td class="highlight-cell">9,600</td>
+            <td class="highlight-cell">4,300</td>
+            <td>8.6%</td>
+            <td>100</td>
+          </tr>
+          <tr>
+            <td>Light + Tracks</td>
+            <td>Light</td>
+            <td>4 Tracks</td>
+            <td class="highlight-cell">10,000</td>
+            <td>3,700</td>
+            <td class="good-cell">14.3%</td>
+            <td>100</td>
+          </tr>
+          <tr>
+            <td>Medium + Hovers</td>
+            <td>Medium</td>
+            <td>8 Hovers</td>
+            <td>5,600</td>
+            <td>3,300</td>
+            <td class="warn-cell">0%</td>
+            <td>80</td>
+          </tr>
+          <tr>
+            <td>Medium + Wheels</td>
+            <td>Medium</td>
+            <td>8 Wheels</td>
+            <td class="highlight-cell">9,600</td>
+            <td class="highlight-cell">5,300</td>
+            <td class="good-cell">20%</td>
+            <td>80</td>
+          </tr>
+          <tr>
+            <td>Medium + Tracks</td>
+            <td>Medium</td>
+            <td>4 Tracks</td>
+            <td class="highlight-cell">10,000</td>
+            <td class="highlight-cell">4,700</td>
+            <td class="good-cell">25%</td>
+            <td>80</td>
+          </tr>
+          <tr>
+            <td>Heavy + Hovers</td>
+            <td>Heavy</td>
+            <td>8 Hovers</td>
+            <td>5,600</td>
+            <td class="warn-cell">1,800</td>
+            <td>11.1%</td>
+            <td>60</td>
+          </tr>
+          <tr>
+            <td>Heavy + Wheels</td>
+            <td>Heavy</td>
+            <td>10 Wheels</td>
+            <td class="highlight-cell">12,000</td>
+            <td class="highlight-cell">7,500</td>
+            <td>11.1%</td>
+            <td>60</td>
+          </tr>
+          <tr>
+            <td>Heavy + Tracks</td>
+            <td>Heavy</td>
+            <td>6 Tracks</td>
+            <td class="highlight-cell">15,000</td>
+            <td class="highlight-cell">6,300</td>
+            <td class="warn-cell">0%</td>
+            <td>60</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout insight">
+      <div class="callout-title">What the Data Shows</div>
+      <p>
+        Hovers now have the <strong>lowest carrying capacity</strong> across all cabin types — they trade capacity for mobility. Wheels and tracks offer significantly more armor budget but at the cost of speed or agility. Medium cabin + Tracks now gets a <strong>25% power bonus</strong> from unused Wheel Points, making tracks a viable aggressive option. Each combination has a distinct identity and trade-off profile.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 06 VALIDATION -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">06</div>
+    <h2>Validation on Live Player Data</h2>
+    <p>
+      Theoretical balance is one thing — but Crossout Mobile is a constructor game where players build unpredictable combinations. We needed to test these fundamental changes against <strong>real player builds from production servers</strong>.
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Top competitive builds</strong> — Exported the top 13 PvP and top 13 PvE builds from live servers and ran them through the new system to evaluate impact.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Active player sample</strong> — Pulled builds from random active players (epic-tier cabins and movement parts, 10+ battles in the past week) to assess impact on the general population.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Impact assessment</strong> — Checked which builds would break, which would be buffed, and which remained stable. Tuned parameters to minimize disruption to fair builds while correctly nerfing exploitative ones.</span>
+      </li>
+    </ol>
+
+    <p>
+      This approach — combining theoretical modeling with production data validation — gave us high confidence that the rework would improve balance without alienating the existing player base.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 07 IMPLEMENTATION -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">07</div>
+    <h2>Implementation & Outcome</h2>
+    <p>
+      The rework was implemented in collaboration with the engineering team. The scope included:
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text">New <strong>Wheel Points</strong> system coded into cabins and movement parts</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text">Carrying capacity and critical mass <strong>caps added to all 50+ cabins</strong></span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text">Power bonus formula implemented for <strong>unused Wheel Points</strong></span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">4</span>
+        <span class="process-text">Engine modules extended with <strong>limit bonuses</strong> (carry cap, critical mass, wheel points)</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">5</span>
+        <span class="process-text">Full balance pass across <strong>all cabins and all movement parts</strong> in the game</span>
+      </li>
+    </ol>
+
+    <div class="callout solution">
+      <div class="callout-title">Result</div>
+      <p>
+        The rework introduced a healthier meta where all three movement types had distinct roles and trade-offs. Hovers were no longer the universally dominant choice. Tracks became a viable competitive option. The constructor retained its freedom — players still had meaningful build variety — but within a balanced framework that rewarded strategic thinking over exploitative stacking.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 08 TAKEAWAYS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">08</div>
+    <h2>Key Takeaways</h2>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Constrain, don't remove.</strong> The movement parts still generate carrying capacity — I added ceilings and resource costs rather than gutting the core mechanic. Preserving what players loved was essential.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Create trade-offs, not nerfs.</strong> The power bonus for unused Wheel Points turned a restriction into a choice. Players aren't losing something — they're deciding what to prioritize.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Validate on real data.</strong> Theoretical balance spreadsheets are necessary but not sufficient. Testing against production builds from live servers caught edge cases that formulas alone would miss.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Communicate the system.</strong> The resource flow diagram was critical for aligning the team — engineers, producers, and other designers all needed to understand the new model before implementation began.</span>
+      </li>
+    </ol>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- ============================================== -->
+  <!-- PART 2: WEAPON ARCHETYPE REWORK -->
+  <!-- ============================================== -->
+
+  <div id="part2" class="case-section fade-in" style="text-align: center; padding: 20px 0 0;">
+    <div style="font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 8px;">Part 2</div>
+    <h2 style="font-size: 1.8rem; margin-bottom: 0;">Weapon Archetype Rework</h2>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 09 WEAPON PROBLEM -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">09</div>
+    <h2>The Problem</h2>
+    <p>
+      Crossout Mobile had a wide arsenal of weapons — cannons, machine guns, shotguns, rockets — but within each weapon class, individual weapons <strong>played nearly identically</strong>. Players had no reason to choose one cannon over another beyond raw power score. The result: no meaningful weapon selection, no build diversity within a class, and a stale combat meta.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-number blue">2</div>
+        <div class="stat-box-label">Cannon archetypes<br>created</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number yellow">3</div>
+        <div class="stat-box-label">Machine gun<br>archetypes created</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number green">Every<br style="line-height:0.5">patch</div>
+        <div class="stat-box-label">Data-driven<br>balance passes</div>
+      </div>
+    </div>
+
+    <div class="callout problem">
+      <div class="callout-title">Core Issue</div>
+      <p>
+        Weapons within the same class had similar stats and no distinct gameplay identity. A "choice" between two cannons was really just picking whichever had higher numbers. There was no trade-off, no playstyle differentiation, and no reason to experiment with different weapons of the same type.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 10 CANNON ARCHETYPES -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">10</div>
+    <h2>Cannon Archetypes</h2>
+    <p>
+      I split cannons into <strong>two fundamental archetypes</strong> based on an existing mechanical difference — turret rotation — and used that as the foundation for completely different gameplay identities:
+    </p>
+
+    <div class="archetype-grid">
+      <div class="archetype-card">
+        <div class="archetype-card-icon">🔄</div>
+        <div class="archetype-card-name">360° Rotating Cannons</div>
+        <div class="archetype-card-role">Brawler · Mid-range · Area damage</div>
+        <div class="archetype-card-desc">
+          Large blast radius but high projectile spread. Built for aggressive close-to-mid range combat — destroying armor, wheels, and structures. High weapon durability lets players tank hits during aggressive pushes.
+        </div>
+        <div class="archetype-card-perk">Playstyle: charge in, survive the brawl, deal splash damage in chaotic fights</div>
+      </div>
+      <div class="archetype-card">
+        <div class="archetype-card-icon">🎯</div>
+        <div class="archetype-card-name">Fixed-Angle Cannons</div>
+        <div class="archetype-card-role">Glass cannon · Long-range · Precision</div>
+        <div class="archetype-card-desc">
+          High single-hit damage with low spread and small blast radius. Designed for sniping — rewarding precise aim at distance. Lower durability makes them vulnerable to flanks.
+        </div>
+        <div class="archetype-card-perk">Playstyle: position carefully, pick targets, punish mistakes — but exposed to flanking</div>
+      </div>
+    </div>
+
+    <p>
+      Within each archetype, I created <strong>further differentiation through fire rate</strong>: fast-firing variants with lower damage per shot, and slow-firing variants with higher damage per shot. What used to be interchangeable cannons became a matrix of meaningful choices — each influencing build composition, cabin selection, and movement part pairing.
+    </p>
+
+    <div class="callout insight">
+      <div class="callout-title">Systems Synergy</div>
+      <p>
+        Weapon choice now influenced the entire vehicle build. A rotating brawler cannon pairs naturally with a <strong>heavy cabin + tracks</strong> (tank hits, stay in the fight). A fixed sniper cannon works best on a <strong>light cabin + hovers</strong> (reposition quickly, maintain distance). The weapon rework amplified the carrying capacity rework — together, they created a build meta where every component choice mattered.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 11 MACHINEGUN ARCHETYPES -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">11</div>
+    <h2>Machine Gun Archetypes</h2>
+    <p>
+      Machine guns received a similar treatment, split into <strong>three distinct archetypes</strong>:
+    </p>
+
+    <div class="archetype-grid three-col">
+      <div class="archetype-card">
+        <div class="archetype-card-icon">🔭</div>
+        <div class="archetype-card-name">Long-Range</div>
+        <div class="archetype-card-role">Precision · Large magazine · Slow fire</div>
+        <div class="archetype-card-desc">
+          Accurate at distance, large ammo reserve, slow rate of fire with long reload. Lower durability. Rewards positioning and ammo management.
+        </div>
+        <div class="archetype-card-perk">Perk example: kill bonus → +100% reload speed for 2s (rewards precision)</div>
+      </div>
+      <div class="archetype-card">
+        <div class="archetype-card-icon">⚖️</div>
+        <div class="archetype-card-name">Balanced</div>
+        <div class="archetype-card-role">All-rounder · Medium stats</div>
+        <div class="archetype-card-desc">
+          Middle ground across all parameters. For players who want solid performance without committing to a specialized playstyle.
+        </div>
+        <div class="archetype-card-perk">No extreme trade-offs — the "comfortable" option</div>
+      </div>
+      <div class="archetype-card">
+        <div class="archetype-card-icon">⚡</div>
+        <div class="archetype-card-name">Close-Range</div>
+        <div class="archetype-card-role">High fire rate · Small magazine · Fast reload</div>
+        <div class="archetype-card-desc">
+          Spray and pray at close range. Wide spread cone, burns through ammo fast, but reloads quickly. Slightly higher durability for surviving close encounters.
+        </div>
+        <div class="archetype-card-perk">Perk example: equipped → vehicle speed boost (synergy with aggressive playstyle)</div>
+      </div>
+    </div>
+
+    <p>
+      Each archetype was further differentiated with <strong>unique perks</strong> that reinforced the intended playstyle. The close-range machine gun gave a speed boost to the vehicle — encouraging aggressive rushes. The long-range variant rewarded kill-streaks with faster reloads — encouraging careful aim and target selection. Perks turned stat differences into <strong>gameplay identities</strong>.
+    </p>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 12 LIVE BALANCE PROCESS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">12</div>
+    <h2>Live Balance Process</h2>
+    <p>
+      After launching the archetype rework, I ran <strong>ongoing balance passes every patch</strong>, using production analytics to monitor weapon health across different player segments.
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Win rate tracking</strong> — Monitored win rates per weapon across different leagues and player cohorts. Flagged statistically significant deviations from the 50% target.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Popularity analysis</strong> — Tracked pick rates per weapon per energy cost. Unpopular weapons got stat buffs (damage, durability) before any mechanic changes — the simplest fix first.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Detachment rates</strong> — Monitored what percentage of a weapon's instances get destroyed in combat. Used to tune durability: close-range weapons got higher HP, long-range got lower — reinforcing each archetype's intended risk profile.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">4</span>
+        <span class="process-text"><strong>DPE (Damage Per Energy)</strong> — Energy is a build resource: each weapon costs energy to equip (e.g., a machine gun costs 2, a cannon costs 4). DPE normalizes damage output by energy cost, ensuring weapons at the same energy investment deal comparable value. Weapons consistently above or below target DPE got damage adjustments.</span>
+      </li>
+    </ol>
+
+    <div class="callout solution">
+      <div class="callout-title">Balance Philosophy</div>
+      <p>
+        The goal was never perfect 50% win rate for every weapon — it was <strong>meaningful choice within healthy bounds</strong>. Each weapon should have a scenario where it's the best pick, and no weapon should be the best pick in every scenario. When the data showed a weapon outside acceptable bounds, I adjusted the <strong>simplest parameter first</strong> (usually damage), then durability, and only changed mechanics as a last resort.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 13 WEAPON TAKEAWAYS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">13</div>
+    <h2>Weapon Rework Takeaways</h2>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Differentiation through trade-offs, not power.</strong> Making weapons feel different isn't about one being "better" — it's about each being better at something specific and worse at something else.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Perks amplify identity.</strong> Stat differences define archetypes; perks make them memorable. A speed boost on a close-range gun doesn't just adjust numbers — it tells the player "this is a rush weapon."</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Systems compound.</strong> The weapon rework made the carrying capacity rework more meaningful, and vice versa. When individual systems create clear identities, the combinatorial space of the constructor becomes richer.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Simplest fix first.</strong> In live-service balance, always try the least invasive change. Buff damage before reworking mechanics. Monitor for a full patch cycle before adjusting again. Data over instinct.</span>
+      </li>
+    </ol>
+  </div>
+
+  <!-- FOOTER NAV -->
+  <div class="case-footer-nav">
+    <a href="index.html#cases" class="case-nav-link">← All Case Studies</a>
+    <a href="case-crossout-levels.html" class="case-nav-link">Crossout Mobile: Level Design →</a>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Tab active state on scroll
+  const tabs = document.querySelectorAll('.case-tab');
+  const part1 = document.getElementById('part1');
+  const part2 = document.getElementById('part2');
+
+  if (part1 && part2 && tabs.length >= 2) {
+    const tabObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tabs.forEach(t => t.classList.remove('active'));
+          if (entry.target.id === 'part1') tabs[0].classList.add('active');
+          if (entry.target.id === 'part2') tabs[1].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -60% 0px' });
+
+    tabObserver.observe(part1);
+    tabObserver.observe(part2);
+  }
+});
+</script>
+
+</body>
+</html>

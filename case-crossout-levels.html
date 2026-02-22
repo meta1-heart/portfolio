@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: Crossout Mobile Level Design — Nikolai Borodin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-card: #16161f;
+  --text-primary: #e8e8ed;
+  --text-secondary: #9494a3;
+  --text-muted: #5e5e6e;
+  --accent: #4f8fff;
+  --accent-dim: #3a6fd4;
+  --accent-glow: rgba(79, 143, 255, 0.15);
+  --accent-warm: #ff6f4f;
+  --accent-green: #4fcc7a;
+  --accent-yellow: #f0c040;
+  --border: #22222e;
+  --border-light: #2a2a38;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --max-width: 860px;
+  --radius: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #7aadff; }
+img { max-width: 100%; display: block; border-radius: var(--radius); }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 18px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
+.nav-logo span { color: var(--accent); }
+.nav-back { font-family: var(--font-display); font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.nav-back:hover { color: var(--text-primary); }
+
+.case-hero { padding: 140px 40px 60px; max-width: var(--max-width); margin: 0 auto; }
+.case-hero-label {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+}
+.case-hero-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+.case-hero h1 {
+  font-family: var(--font-display); font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 20px;
+}
+.case-hero-desc { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; line-height: 1.75; margin-bottom: 32px; }
+.case-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+.meta-value { font-family: var(--font-display); font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+
+.case-content { max-width: var(--max-width); margin: 0 auto; padding: 0 40px 100px; }
+.case-section { margin-bottom: 64px; }
+.case-section-number { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; color: var(--accent-dim); margin-bottom: 8px; }
+.case-section h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.01em; }
+.case-section h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin-bottom: 14px; margin-top: 36px; color: var(--text-primary); }
+.case-section p { color: var(--text-secondary); margin-bottom: 16px; font-size: 1rem; line-height: 1.8; }
+.case-section p strong { color: var(--text-primary); }
+
+.callout {
+  background: var(--bg-card); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 24px 0;
+}
+.callout.principle { border-left-color: var(--accent-yellow); }
+.callout.result { border-left-color: var(--accent-green); }
+.callout-title {
+  font-family: var(--font-display); font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.callout.principle .callout-title { color: var(--accent-yellow); }
+.callout.result .callout-title { color: var(--accent-green); }
+.callout p { color: var(--text-secondary); margin-bottom: 0; font-size: 0.95rem; line-height: 1.7; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0; }
+.stat-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; text-align: center;
+}
+.stat-box-number { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+.stat-box-number.blue { color: var(--accent); }
+.stat-box-number.green { color: var(--accent-green); }
+.stat-box-number.yellow { color: var(--accent-yellow); }
+.stat-box-label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.3; }
+
+.process-list { list-style: none; margin: 24px 0; display: flex; flex-direction: column; gap: 16px; }
+.process-item { display: flex; gap: 16px; align-items: flex-start; }
+.process-number {
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; color: var(--accent);
+  background: var(--accent-glow); width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.process-text { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+.process-text strong { color: var(--text-primary); }
+
+/* Image placeholder */
+.case-image {
+  margin: 28px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-secondary);
+}
+.case-image img { width: 100%; border-radius: 0; }
+.case-image-placeholder {
+  width: 100%; height: 320px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-secondary); color: var(--text-muted);
+  font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.05em;
+}
+.case-image-placeholder.short { height: 220px; }
+.case-image-caption {
+  padding: 12px 16px; font-size: 0.82rem; color: var(--text-muted);
+  font-style: italic; border-top: 1px solid var(--border);
+}
+
+/* Image grid */
+.image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+.image-grid .case-image { margin: 0; }
+
+/* Video embed */
+.video-embed {
+  margin: 28px 0; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); aspect-ratio: 16/9;
+}
+.video-embed iframe { width: 100%; height: 100%; border: none; }
+
+/* Map showcase card */
+.map-showcase {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px; margin: 32px 0;
+}
+.map-showcase h3 {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+  margin-bottom: 6px; margin-top: 0; color: var(--text-primary);
+}
+.map-showcase .map-meta {
+  font-size: 0.82rem; color: var(--accent); font-family: var(--font-display);
+  font-weight: 500; margin-bottom: 16px;
+}
+.map-showcase p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; margin-bottom: 12px; }
+.map-showcase .map-links { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+.map-showcase .map-links a {
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 600;
+  color: var(--accent); display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border: 1px solid rgba(79,143,255,0.2); border-radius: 6px;
+  transition: all 0.2s;
+}
+.map-showcase .map-links a:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+.case-divider { border: none; height: 1px; background: var(--border); margin: 48px 0; }
+
+.case-footer-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 0; border-top: 1px solid var(--border); margin-top: 48px;
+}
+.case-nav-link {
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 500;
+  color: var(--text-secondary); display: flex; align-items: center; gap: 8px;
+}
+.case-nav-link:hover { color: var(--text-primary); }
+
+.fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 700px) {
+  .case-hero { padding: 120px 24px 40px; }
+  .case-content { padding: 0 24px 80px; }
+  nav { padding: 14px 20px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .image-grid { grid-template-columns: 1fr; }
+  .case-meta { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NB<span>.</span></a>
+  <a href="index.html#cases" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="case-hero">
+  <div class="case-hero-label fade-in">Level Design Case Study</div>
+  <h1 class="fade-in">Crossout Mobile: Shipping 15+ Multiplayer Maps</h1>
+  <p class="case-hero-desc fade-in">
+    How I designed, built, and shipped PvP and PvE maps for a live-service vehicular combat game — from paper design to production pipeline — delivering 6 maps per year on a 2-month cadence.
+  </p>
+  <div class="case-meta fade-in">
+    <div class="meta-item">
+      <span class="meta-label">Project</span>
+      <span class="meta-value">Crossout Mobile</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Role</span>
+      <span class="meta-value">Game & Level Designer → Lead</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Engine</span>
+      <span class="meta-value">Unity</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Platform</span>
+      <span class="meta-value">Android / iOS</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Period</span>
+      <span class="meta-value">2019–2022</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="case-content">
+
+  <!-- 01 OVERVIEW -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">01</div>
+    <h2>Overview</h2>
+    <p>
+      Crossout Mobile is a free-to-play PvP vehicular combat game where players build custom vehicles and battle in arena-style maps. As part of the core design team — and later as Lead Level Designer — I was responsible for designing, building, and shipping multiplayer maps across both PvP and PvE modes.
+    </p>
+    <p>
+      Over nearly 4 years on the project, I shipped <strong>15+ maps</strong>, established the team's level production pipeline, and introduced design metrics and processes that enabled a consistent <strong>2-month release cadence</strong>.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-number blue">15+</div>
+        <div class="stat-box-label">Maps shipped</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number green">6/yr</div>
+        <div class="stat-box-label">Maps per year<br>(pipeline)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number yellow">~2 min</div>
+        <div class="stat-box-label">Average match<br>duration</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number blue">20–30s</div>
+        <div class="stat-box-label">Time to first<br>contact</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 02 DESIGN PRINCIPLES -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">02</div>
+    <h2>Design Principles</h2>
+    <p>
+      Crossout Mobile maps needed to support fast-paced vehicular combat on mobile — short matches, clear navigation, and fair competition. I established a set of core principles that guided every map I designed:
+    </p>
+
+    <div class="callout principle">
+      <div class="callout-title">Core Structure</div>
+      <p>
+        Every map is built as a <strong>network of roads connecting combat arenas</strong>. Unlike the PC version (Crossout), we made all maps <strong>fully symmetrical</strong> (with minor visual variation) to guarantee fair PvP on both sides.
+      </p>
+    </div>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Symmetrical layout</strong> — Both teams start with identical spatial advantages. Mirrored geometry ensures no side has an inherent win-rate edge.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Key arenas (front lines)</strong> — Central contact zones where teams meet. These are the primary engagement areas designed for head-on combat with cover variety.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Sniper positions</strong> — Elevated or distant vantage points with sight lines to key arenas. Reward positioning and ranged builds, but exposed to flanks.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">4</span>
+        <span class="process-text"><strong>Shortcuts & stealth routes</strong> — Side passages for flanking and rear attacks. Give aggressive players options to break stalemates and punish static teams.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">5</span>
+        <span class="process-text"><strong>Objective points</strong> — Placed to support multiple game modes (Capture, Domination, etc.) without requiring separate map variants.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">6</span>
+        <span class="process-text"><strong>20–30 second first contact</strong> — Fast enough to keep mobile sessions engaging, long enough for teams to choose their approach lane.</span>
+      </li>
+    </ol>
+
+    <div class="case-image">
+      <img src="images/substation_scheme_lines.png" alt="Top-down layout diagram showing lanes, arenas, sniper positions, and flanking routes">
+      <div class="case-image-caption">Example top-down layout showing the road network, symmetry axis, key arenas, sniper positions (S), and flanking shortcuts (dashed).</div>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 03 PROCESS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">03</div>
+    <h2>Design & Production Process</h2>
+    <p>
+      I owned maps end-to-end — from initial concept through production to release. Over time, I formalized this into a repeatable pipeline that the team could follow consistently.
+    </p>
+
+    <h3>Step 1: Concept & Reference</h3>
+    <p>
+      Each map starts with a <strong>theme and reference board</strong> — real-world locations, mood, and visual identity. The theme drives both the visual language and the gameplay opportunities (e.g., an industrial substation offers vertical structures for sniper nests; a frozen dam creates long sight lines with limited cover).
+    </p>
+
+    <div class="case-image">
+      <img src="images/substation_refsearch.png" alt="Reference images and mood board">
+      <div class="case-image-caption">Reference collection for map concept — visual themes, real-world locations, architectural elements.</div>
+    </div>
+
+    <h3>Step 2: Paper Design</h3>
+    <p>
+      A <strong>top-down schematic</strong> defining the road network, arena placement, spawn points, sight lines, and flow. This is where the core gameplay decisions happen — lane count, symmetry verification, engagement distances, flanking opportunities.
+    </p>
+
+    <div class="case-image">
+      <img src="images/pvp-map-anatomy.svg" alt="Paper design / top-down schematic with annotations">
+      <div class="case-image-caption">Paper design phase — road network, combat arenas, spawn positions, and flow arrows annotated on a top-down schematic.</div>
+    </div>
+
+    <h3>Step 3: Blockout / Greybox</h3>
+    <p>
+      The first pass in Unity — <strong>simple geometry to validate scale, flow, and gameplay</strong>. At this stage I test drive times, sight lines, cover placement, and whether the map "reads" correctly from the player's perspective. Vehicles in Crossout Mobile vary massively in size and speed, so metrics need to accommodate everything from small buggies to heavy trucks.
+    </p>
+
+    <div class="image-grid">
+      <div class="case-image">
+        <img src="images/substation_blockout.png" alt="Blockout screenshot — top-down view">
+        <div class="case-image-caption">Blockout: top-down view showing road layout and arena volumes.</div>
+      </div>
+      <div class="case-image">
+        <img src="images/substation_blockout2.png" alt="Blockout screenshot — player perspective">
+        <div class="case-image-caption">Blockout: player perspective testing scale and sight lines.</div>
+      </div>
+    </div>
+
+    <h3>Step 4: Playtest & Iterate</h3>
+    <p>
+      Internal playtests with the team to validate flow, pacing, and balance. Key things I look for: <strong>do both sides reach the first arena at the same time? Are sniper positions overpowered? Do shortcuts feel rewarding without being mandatory?</strong> Feedback is collected, iterated on, and retested until the map feels fair and fun.
+    </p>
+
+    <h3>Step 5: Art Pass</h3>
+    <p>
+      Final visual production — terrain sculpting, props, lighting, composition, and texturing. I handled the full art pass on many maps myself (Substation, Frozen Dam, Sinto City), working on composition, lighting, terrain, and prop modeling in Unity and Blender.
+    </p>
+
+    <div class="image-grid">
+      <div class="case-image">
+        <img src="images/substation_final.png" alt="Final in-game screenshot 1">
+        <div class="case-image-caption">Final art pass — in-game environment with lighting and props.</div>
+      </div>
+      <div class="case-image">
+        <img src="images/substation_final2.png" alt="Final in-game screenshot 2">
+        <div class="case-image-caption">Final art pass — different angle showing composition and atmosphere.</div>
+      </div>
+    </div>
+
+    <h3>Step 6: Ship & Live Iteration</h3>
+    <p>
+      After release, I monitored <strong>heatmaps and analytics</strong> to identify balance issues — areas where fights cluster too heavily, dead zones players avoid, or sight lines that give one position an unfair advantage. Post-launch tuning was an ongoing part of the live-service cycle.
+    </p>
+
+    <div class="case-image">
+      <img src="images/substation_heatmap.png" alt="Heatmap example showing player engagement zones">
+      <div class="case-image-caption">Post-launch heatmap analysis — identifying engagement clusters and dead zones for balance tuning.</div>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 04 MAP SHOWCASES -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">04</div>
+    <h2>Featured Maps</h2>
+
+    <!-- SUBSTATION -->
+    <div class="map-showcase">
+      <h3>Substation</h3>
+      <div class="map-meta">PvP · Shipped June 2022 · Full ownership (concept → gameplay → art → release)</div>
+
+      <div class="image-grid">
+        <div class="case-image" style="margin:0">
+          <img src="images/substation_blockout3.png" alt="Substation — blockout">
+          <div class="case-image-caption">Blockout stage</div>
+        </div>
+        <div class="case-image" style="margin:0">
+          <img src="images/substation_final3.png" alt="Substation — final">
+          <div class="case-image-caption">Final in-game</div>
+        </div>
+      </div>
+
+      <p>
+        Industrial-themed map built around a central power substation. Vertical structures create natural sniper positions while ground-level corridors offer flanking routes. I owned the full lifecycle — from paper design through blockout, art pass, and release.
+      </p>
+
+      <div class="map-links">
+        <a href="https://docs.google.com/document/d/1_yRmNHwc4Q8x6uPHrA9m0rN_9fYXn9iATfaEyMwwlOI/edit" target="_blank">📄 Full Process Breakdown</a>
+      </div>
+    </div>
+
+    <!-- FROZEN DAM -->
+    <div class="map-showcase">
+      <h3>Frozen Dam</h3>
+      <div class="map-meta">PvP · Shipped December 2022 · Full ownership (concept → gameplay → art → release)</div>
+
+      <div class="image-grid">
+        <div class="case-image" style="margin:0">
+          <img src="images/dam_blockout.png" alt="Frozen Dam — blockout">
+          <div class="case-image-caption">Blockout stage</div>
+        </div>
+        <div class="case-image" style="margin:0">
+          <img src="images/dam_final.png" alt="Frozen Dam — final">
+          <div class="case-image-caption">Final in-game</div>
+        </div>
+      </div>
+
+      <p>
+        Winter-themed map featuring a frozen dam as the central landmark. Long sight lines across the dam surface create sniper duels, while lower paths along the river offer protected flanking routes for aggressive pushes. The elevation differences between the dam top and river bed create distinct gameplay layers.
+      </p>
+
+      <div class="map-links">
+        <a href="https://youtu.be/9t-ueAaOzLA?si=VMVhz8YcwOvLBCiS&t=28" target="_blank">🎬 Gameplay Video</a>
+      </div>
+    </div>
+
+    <!-- SINTO CITY -->
+    <div class="map-showcase">
+      <h3>Sinto City</h3>
+      <div class="map-meta">PvP · Level Design (gameplay, greybox, metrics, flow, lighting, composition)</div>
+
+      <div class="case-image">
+        <img src="images/sinto_final.png" alt="Sinto City — final in-game">
+        <div class="case-image-caption">Sinto City — urban PvP environment.</div>
+      </div>
+
+      <p>
+        Urban environment with tight city blocks creating close-quarters combat zones. The grid-like street layout provides clear navigation while side alleys and building gaps create flanking opportunities. Designed to reward aggressive, close-range builds while still offering sniper positions on building rooftops.
+      </p>
+
+      <div class="map-links">
+        <a href="https://youtu.be/bnytRyXRUr4?si=fdzd1bsr7OSMdL5Z&t=66" target="_blank">🎬 Gameplay Video</a>
+      </div>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 05 PIPELINE -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">05</div>
+    <h2>Production Pipeline</h2>
+    <p>
+      When I was promoted to Lead Level Designer, one of my first initiatives was to formalize the map production process into a <strong>repeatable pipeline</strong> that the whole team could follow. This was critical for hitting the 2-month release cadence with a small team (2 designers + 2 artists).
+    </p>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">1</span>
+        <span class="process-text"><strong>Concept lock (Week 1)</strong> — Theme, references, and paper design reviewed and approved by Lead GD and Art Director.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">2</span>
+        <span class="process-text"><strong>Blockout review (Week 2–3)</strong> — Greybox built and playtested. Metrics validated: drive times, sight lines, arena sizes, symmetry.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">3</span>
+        <span class="process-text"><strong>Gameplay lock (Week 4)</strong> — Layout finalized after playtest iteration. No major structural changes after this point.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">4</span>
+        <span class="process-text"><strong>Art production (Week 5–7)</strong> — Terrain, props, lighting, composition. Parallel work between designer and artist where possible.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">5</span>
+        <span class="process-text"><strong>Polish & QA (Week 8)</strong> — Performance optimization (critical for mobile), bug fixes, final playtest, ship.</span>
+      </li>
+    </ol>
+
+    <div class="callout result">
+      <div class="callout-title">Result</div>
+      <p>
+        This pipeline enabled the team to consistently deliver <strong>6 PvP maps per year</strong> — one every two months — while maintaining quality and gameplay balance. It also freed me up to focus on systems design work (weapon balance, progression, economy) alongside map production.
+      </p>
+    </div>
+  </div>
+
+  <hr class="case-divider">
+
+  <!-- 06 TAKEAWAYS -->
+  <div class="case-section fade-in">
+    <div class="case-section-number">06</div>
+    <h2>Key Takeaways</h2>
+
+    <ol class="process-list">
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Symmetry is non-negotiable for mobile PvP.</strong> Players on mobile have shorter sessions and lower tolerance for feeling cheated. Symmetrical layouts removed a whole category of balance complaints.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Design for the vehicle, not the character.</strong> Crossout Mobile vehicles range from tiny buggies to massive trucks. Every corridor, cover piece, and arena needed to accommodate this full range of sizes and speeds.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Pipeline enables quality at speed.</strong> Formalizing the process from concept to ship meant less ad-hoc decision making and more predictable delivery — critical for a live-service team.</span>
+      </li>
+      <li class="process-item">
+        <span class="process-number">→</span>
+        <span class="process-text"><strong>Ship, then listen.</strong> Heatmaps and analytics after launch revealed things no amount of internal playtesting could catch. Post-launch iteration was as important as the initial design.</span>
+      </li>
+    </ol>
+  </div>
+
+  <!-- FOOTER NAV -->
+  <div class="case-footer-nav">
+    <a href="case-crossout-systems.html" class="case-nav-link">← Crossout: Systems Design</a>
+    <a href="case-mundfish.html" class="case-nav-link">Atomic Heart & The CUBE →</a>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+});
+</script>
+
+</body>
+</html>
