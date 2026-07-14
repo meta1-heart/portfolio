@@ -456,6 +456,110 @@ section {
 .case-link::after { content: '→'; }
 
 /* ===== PERSONAL PROJECTS ===== */
+.projects-subtitle {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 48px 0 20px;
+}
+.projects-subtitle:first-of-type { margin-top: 0; }
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.featured-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.featured-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+.featured-thumb {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  position: relative;
+}
+.featured-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.featured-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-light);
+  color: var(--accent);
+}
+.featured-badge.live { color: #4fd48a; }
+.featured-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.featured-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.featured-meta {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.featured-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.featured-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+.store-chip {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  transition: all 0.2s;
+}
+.store-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -638,6 +742,7 @@ footer {
   .hero h1 { font-size: 2.2rem; }
   .skills-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
+  .featured-grid { grid-template-columns: 1fr; }
   .about-stats { grid-template-columns: 1fr; }
   .hero-cta { flex-direction: column; }
   .btn { width: 100%; justify-content: center; }
@@ -707,7 +812,7 @@ footer {
         <div class="stat-label">Shipped Multiplayer Maps</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">4</div>
+        <div class="stat-number">5</div>
         <div class="stat-label">Shipped Titles</div>
       </div>
       <div class="stat-card">
@@ -854,8 +959,50 @@ footer {
   <div class="section-label fade-in">Personal & Practice</div>
   <h2 class="section-title fade-in">Personal Projects</h2>
   <p class="projects-intro fade-in" style="color: var(--text-secondary); max-width: 600px; margin-bottom: 40px; font-size: 0.95rem; line-height: 1.7;">
-    Practice projects and explorations in level design, blockouts, and environment art — built to sharpen skills and test ideas outside of production.
+    Independent titles I design and ship outside of studio work, plus practice explorations in level design, blockouts, and environment art.
   </p>
+
+  <div class="projects-subtitle fade-in">Shipped &amp; In Development</div>
+  <div class="featured-grid">
+
+    <div class="featured-card fade-in stagger-1">
+      <div class="featured-thumb">
+        <img src="images/harvestskies.jpg" alt="Harvest Skies: Crop Dusting Simulator">
+        <div class="featured-badge">In Development · Playtest Live</div>
+      </div>
+      <div class="featured-body">
+        <div class="featured-title">Harvest Skies: Crop Dusting Simulator</div>
+        <div class="featured-meta">Game & Level Designer · Digital Chiefs Studio · Team of 4</div>
+        <div class="featured-desc">
+          Flight-management sim about growing a crop-dusting business from one rusty biplane. I own the core loop and systems design: contract economy, plane &amp; character progression, chemical mixing, in-game shop, salvage &amp; recycling loop, and day-based event and quest scripting that drives story progression.
+        </div>
+        <div class="featured-links">
+          <a href="https://store.steampowered.com/app/4110140/Harvest_Skies_Crop_Dusting_Simulator/" target="_blank" class="store-chip">Steam Page ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="featured-card fade-in stagger-2">
+      <div class="featured-thumb">
+        <img src="images/plume.jpg" alt="Plume 3D Coloring Book">
+        <div class="featured-badge live">Shipped · Live on Both Stores</div>
+      </div>
+      <div class="featured-body">
+        <div class="featured-title">Plume — 3D Coloring Book</div>
+        <div class="featured-meta">Co-Creator · Product &amp; Systems Design · iOS &amp; Android</div>
+        <div class="featured-desc">
+          Relaxing 3D coloring app designed, built, and shipped end-to-end by a team of two. I own product design, UX, progression and content pipeline, and ongoing live updates across the App Store and Google Play — 1.5+ years from first prototype to live product.
+        </div>
+        <div class="featured-links">
+          <a href="https://apps.apple.com/ca/app/plume-3d-coloring-book/id6753200696" target="_blank" class="store-chip">App Store ↗</a>
+          <a href="https://play.google.com/store/apps/details?id=com.plumeplus.plume" target="_blank" class="store-chip">Google Play ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="projects-subtitle fade-in">Practice &amp; Explorations</div>
   <div class="projects-grid">
 
     <a href="https://docs.google.com/document/d/12vufS51g7hcw4WJ_ABE-tXkFT1FsLCmWzaPwhgfEYIo/" target="_blank" class="project-card fade-in stagger-1">
