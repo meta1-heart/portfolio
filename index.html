@@ -5,6 +5,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nikolai Borodin — Game & Systems Designer</title>
+<meta name="description" content="Game & Systems Designer with 7+ years across live-service multiplayer titles — Atomic Heart universe (UE5), Crossout Mobile, and independent releases. Systems, economies, and multiplayer spaces.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nikolai Borodin — Game & Systems Designer">
+<meta property="og:description" content="7+ years designing systems, economies, and multiplayer spaces. Atomic Heart universe (UE5), Crossout Mobile, and independent releases on Steam and mobile.">
+<meta property="og:url" content="https://meta1-heart.github.io/portfolio/">
+<meta property="og:image" content="https://meta1-heart.github.io/portfolio/images/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nikolai Borodin — Game & Systems Designer">
+<meta name="twitter:description" content="7+ years designing systems, economies, and multiplayer spaces for live-service titles.">
+<meta name="twitter:image" content="https://meta1-heart.github.io/portfolio/images/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -32,7 +42,7 @@
 
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body {
   font-family: var(--font-body);
   background: var(--bg-primary);
@@ -95,6 +105,30 @@ nav {
   transition: color 0.2s;
 }
 .nav-links a:hover { color: var(--text-primary); }
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  width: 38px;
+  height: 34px;
+  cursor: pointer;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+.nav-toggle span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--text-primary);
+  transition: transform 0.25s, opacity 0.25s;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
 /* ===== HERO ===== */
 .hero {
@@ -125,10 +159,56 @@ nav {
   background: radial-gradient(circle, rgba(255, 111, 79, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
+/* Level-editor grid — the site's signature. Minor cells 24px, major lines every 120px,
+   faded out towards the edges like an editor viewport. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(79, 143, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 143, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(79, 143, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 143, 255, 0.10) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 65% 35%, black 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse 90% 80% at 65% 35%, black 0%, transparent 75%);
+}
+/* Optional hero backdrop: images/hero.jpg, shown via <img> with a brightness lift
+   so dark screenshots stay readable. Overlay darkens only the left text zone. */
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-backdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center right;
+  filter: brightness(1.18) saturate(1.05);
+}
+.hero-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, var(--bg-primary) 8%, rgba(10, 10, 15, 0.72) 42%, rgba(10, 10, 15, 0.08) 100%),
+    linear-gradient(to top, var(--bg-primary) 2%, transparent 28%);
+}
+@media (max-width: 600px) {
+  .hero-backdrop img { object-position: center; }
+  .hero-backdrop::after {
+    background: linear-gradient(rgba(10, 10, 15, 0.7), var(--bg-primary));
+  }
+}
 .hero-inner {
   max-width: var(--max-width);
   margin: 0 auto;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 .hero-tag {
   font-family: var(--font-display);
@@ -393,7 +473,7 @@ section {
 }
 .case-thumb {
   width: 100%;
-  height: 220px;
+  height: 280px;
   background: var(--bg-secondary);
   position: relative;
   overflow: hidden;
@@ -401,6 +481,17 @@ section {
   align-items: center;
   justify-content: center;
 }
+.case-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.case-card:hover .case-thumb img { transform: scale(1.04); }
+.project-thumb img { transition: transform 0.4s ease; }
+.project-card:hover .project-thumb img { transform: scale(1.05); }
+.featured-thumb img { transition: transform 0.5s ease; }
+.featured-card:hover .featured-thumb img { transform: scale(1.04); }
 .case-thumb-placeholder {
   font-family: var(--font-display);
   font-size: 0.8rem;
@@ -725,6 +816,18 @@ footer {
 .stagger-5 { transition-delay: 0.25s; }
 .stagger-6 { transition-delay: 0.3s; }
 
+/* ===== ACCESSIBILITY ===== */
+a:focus-visible, button:focus-visible, .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-in { opacity: 1; transform: none; transition: none; }
+  .case-card, .project-card, .featured-card, .btn { transition: none; }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   nav { padding: 14px 24px; }
@@ -738,7 +841,22 @@ footer {
   .projects-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 600px) {
-  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(10, 10, 15, 0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0 12px;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 12px 24px; }
   .hero h1 { font-size: 2.2rem; }
   .skills-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
@@ -754,6 +872,9 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="nav-logo">NB<span>.</span></div>
+  <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a href="#about">About</a>
     <a href="#experience">Experience</a>
@@ -766,6 +887,8 @@ footer {
 
 <!-- HERO -->
 <section class="hero" id="hero">
+  <div class="hero-backdrop"><img src="images/hero.jpg" alt="" aria-hidden="true" onerror="this.remove()"></div>
+  <div class="hero-grid"></div>
   <div class="hero-inner">
     <div class="hero-tag fade-in">Game & Systems Designer</div>
     <h1 class="fade-in stagger-1">
@@ -775,7 +898,7 @@ footer {
       I design <span style="color: var(--accent);">systems</span> and <span style="color: var(--accent);">levels</span> that keep players coming back
     </p>
     <p class="hero-description fade-in stagger-2">
-      7+ years building progression, economy, combat balance, and gameplay spaces for live-service multiplayer titles. From concept to ship, from data to delight.
+      7+ years building progression, economy, combat balance, and gameplay spaces for live-service multiplayer titles — from first blockout to live ops.
     </p>
     <div class="hero-cta fade-in stagger-3">
       <a href="#cases" class="btn btn-primary">View Case Studies</a>
@@ -903,7 +1026,7 @@ footer {
 
     <a href="case-crossout-systems.html" class="case-card fade-in stagger-1">
       <div class="case-thumb">
-        <img src="images/crossout.png">
+        <img src="images/crossout.png" alt="Crossout Mobile — systems, balance and economy case study" loading="lazy">
       </div>
       <div class="case-body">
         <div class="case-category">Systems Design</div>
@@ -915,7 +1038,7 @@ footer {
 
     <a href="case-crossout-levels.html" class="case-card fade-in stagger-2">
       <div class="case-thumb">
-        <img src="images/crossout2.png">
+        <img src="images/crossout2.png" alt="Crossout Mobile — multiplayer map design case study" loading="lazy">
       </div>
       <div class="case-body">
         <div class="case-category">Level Design</div>
@@ -927,7 +1050,7 @@ footer {
 
     <a href="case-mundfish.html" class="case-card fade-in stagger-3">
       <div class="case-thumb">
-        <img src="images/the_cube.png">
+        <img src="images/the_cube.png" alt="The CUBE and Atomic Heart DLC 1 — UE5 multiplayer environments" loading="lazy">
       </div>
       <div class="case-body">
         <div class="case-category">Level & Combat Design</div>
@@ -939,7 +1062,7 @@ footer {
 
     <a href="case-openworld.html" class="case-card fade-in stagger-4">
       <div class="case-thumb">
-        <img src="images/emr_11.png">
+        <img src="images/emr_11.png" alt="Open-world exploration — 2x2 km environment design" loading="lazy">
       </div>
       <div class="case-body">
         <div class="case-category">World Design</div>
@@ -967,7 +1090,7 @@ footer {
 
     <div class="featured-card fade-in stagger-1">
       <div class="featured-thumb">
-        <img src="images/harvestskies.jpg" alt="Harvest Skies: Crop Dusting Simulator">
+        <img src="images/harvestskies.jpg" alt="Harvest Skies: Crop Dusting Simulator" loading="lazy">
         <div class="featured-badge">In Development · Playtest Live</div>
       </div>
       <div class="featured-body">
@@ -984,7 +1107,7 @@ footer {
 
     <div class="featured-card fade-in stagger-2">
       <div class="featured-thumb">
-        <img src="images/plume.jpg" alt="Plume 3D Coloring Book">
+        <img src="images/plume.jpg" alt="Plume 3D Coloring Book" loading="lazy">
         <div class="featured-badge live">Shipped · Live on Both Stores</div>
       </div>
       <div class="featured-body">
@@ -1006,7 +1129,7 @@ footer {
   <div class="projects-grid">
 
     <a href="https://docs.google.com/document/d/12vufS51g7hcw4WJ_ABE-tXkFT1FsLCmWzaPwhgfEYIo/" target="_blank" class="project-card fade-in stagger-1">
-      <div class="project-thumb"><img src="images/arctic.png"></div>
+      <div class="project-thumb"><img src="images/arctic.png" alt="Arctic Station — stealth action level greybox in UE5" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Arctic Station</div>
         <div class="project-meta">Level Design · Unreal Engine 5</div>
@@ -1015,7 +1138,7 @@ footer {
     </a>
 
     <a href="https://docs.google.com/document/d/1lhnSeh6IfjCaasQsdGjVw4jHA4IHUAu0PQpVGAW9_04/edit" target="_blank" class="project-card fade-in stagger-2">
-      <div class="project-thumb"><img src="images/police.png"></div>
+      <div class="project-thumb"><img src="images/police.png" alt="Police Department — Rainbow Six Siege inspired level greybox" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Police Department</div>
         <div class="project-meta">Level Design · Unreal Engine 5</div>
@@ -1024,7 +1147,7 @@ footer {
     </a>
 
     <a href="https://docs.google.com/document/d/1PMAnbtH7BczGnMbM0bVNjWiW8RI2mECzOVxnPKfERVw/edit#heading=h.8klu971esbjk" target="_blank" class="project-card fade-in stagger-3">
-      <div class="project-thumb"><img src="images/gow.png"></div>
+      <div class="project-thumb"><img src="images/gow.png" alt="Ruined City — PvP third-person action level greybox" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Ruined City</div>
         <div class="project-meta">Level Design · Unreal Engine 5</div>
@@ -1033,7 +1156,7 @@ footer {
     </a>
 
     <a href="https://www.artstation.com/artwork/V21wPg" target="_blank" class="project-card fade-in stagger-4">
-      <div class="project-thumb"><img src="images/walls.png"></div>
+      <div class="project-thumb"><img src="images/walls.png" alt="Breathing Walls — horror environment lighting study" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Breathing Walls</div>
         <div class="project-meta">Level Art · Unreal Engine 5</div>
@@ -1042,7 +1165,7 @@ footer {
     </a>
 
     <a href="https://docs.google.com/document/d/1t-bRWqwcC_9GL4jxN9En6cxTz2Kq8-iPZSHX8Np6BK0/edit" target="_blank" class="project-card fade-in stagger-5">
-      <div class="project-thumb"><img src="images/zombie.png"></div>
+      <div class="project-thumb"><img src="images/zombie.png" alt="Motel — top-down survival level speed build" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Motel</div>
         <div class="project-meta">Level Design · Unity</div>
@@ -1051,7 +1174,7 @@ footer {
     </a>
 
     <a href="https://www.artstation.com/artwork/mzNkq8" target="_blank" class="project-card fade-in stagger-6">
-      <div class="project-thumb"><img src="images/temple.png"></div>
+      <div class="project-thumb"><img src="images/temple.png" alt="Abandoned Temple — environment art composition study" loading="lazy"></div>
       <div class="project-body">
         <div class="project-title">Abandoned Temple</div>
         <div class="project-meta">Level Art · Unreal Engine 4</div>
@@ -1154,6 +1277,20 @@ document.addEventListener('DOMContentLoaded', function() {
     rootMargin: '0px 0px -40px 0px'
   });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.querySelector('.nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }));
+  }
 });
 </script>
 
